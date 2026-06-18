@@ -22,9 +22,11 @@
 
     <section id="inicio" class="hero">
         <h1>Mi Mundo de Ilustraciones</h1>
-
+		<p>
+		<p>
         <p>
-            hello hello Bienvenido a mi portafolio artístico.
+            Algunas de mis dibujos! Plase enjoy and be kind with them,
+			porque cuando el mundo se siente like hell, draw is the only medicine (:
         </p>
 
         <img src="imagenes/portada.jpg" alt="Imagen principal">
@@ -142,6 +144,11 @@
 		const nextBtn = document.querySelector('.next');
 
 		let currentIndex = 0;
+		let zoom = 1;
+		let isDragging = false;
+		let startX, startY;
+		let translateX = 0;
+		let translateY = 0;
 
 		images.forEach((img,index)=> {
 
@@ -154,6 +161,11 @@
 					lightbox.classList.add('show');
 				}, 10);
 				lightboxImg.src = img.src;
+				zoom = 1;
+				translateX = 0;
+				translateY = 0;
+
+				updateTransform();
 
 			});
 
@@ -162,6 +174,19 @@
 		function showImage(index){
 
 			lightboxImg.src = images[index].src;
+			zoom = 1;
+			translateX = 0;
+			translateY = 0;
+
+			updateTransform();
+
+		}
+		
+		
+		function updateTransform() {
+
+		lightboxImg.style.transform =
+			`translate(${translateX}px, ${translateY}px) scale(${zoom})`;
 
 		}
 		
@@ -242,6 +267,73 @@
 			}
 
 		});
+		
+		lightboxImg.addEventListener('wheel', (e) => {
+
+		e.preventDefault();
+
+		if(e.deltaY < 0){
+
+			zoom += 0.1;
+
+		}else{
+
+			zoom -= 0.1;
+
+		}
+
+		if(zoom < 1) zoom = 1;
+		if(zoom > 5) zoom = 5;
+
+		updateTransform();
+
+	});
+	
+	document.addEventListener('mousemove', (e) => {
+
+		if(!isDragging) return;
+
+		translateX = e.clientX - startX;
+		translateY = e.clientY - startY;
+		
+		console.log(translateX, translateY);
+
+		updateTransform();
+
+	});
+	
+	document.addEventListener('mouseup', () => {
+
+		isDragging = false;
+
+		if(zoom > 1){
+			lightboxImg.style.cursor = 'grab';
+		}
+		
+		lightboxImg.style.transition = 'transform 0.1s ease';
+
+	});
+	
+	
+	
+	
+	lightboxImg.addEventListener('mousedown', (e) => {
+
+		console.log("mousedown");
+
+		if(zoom <= 1) return;
+
+		isDragging = true;
+
+		startX = e.clientX - translateX;
+		startY = e.clientY - translateY;
+		
+		lightboxImg.style.cursor = 'grabbing';
+		lightboxImg.style.transition = 'none';
+
+	});
+	
+	
 
 	</script>
 
